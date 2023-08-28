@@ -30,7 +30,7 @@ const HomePage: FC = () => {
         amount: '100',
         crypto: 'ETH',
         fiat: 'USD',
-        partnerAccountId: 'xxxxxxxx',
+        partnerAccountId: 'xxxxxxxxx',
         payment: 'BANKCARD',
         region: 'US',
     });
