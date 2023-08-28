@@ -1,6 +1,6 @@
 # unlimit-test-app
 
-In order for all components of the app to work, you must enter in your unique secret keys and partnerAccountd within the code.
+In order for all components of the app to work, you must enter in your unique keys and partnerAccountd within the code.
 
 1) Pull and Run https://github.com/Rob--W/cors-anywhere in order to get a CORS proxy going so you do not run into CORS problems testing on local
 2) Run npm i
