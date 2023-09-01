@@ -124,7 +124,7 @@ const HomePage: FC = () => {
     };
 
     const getOrders = async (params) => {
-        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/orders&${params}`, {
+        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/orders&${params}`, {
             method: "GET",
             redirect: 'follow',
             headers: {
@@ -152,7 +152,7 @@ const HomePage: FC = () => {
         let dataVerify3 = "GET" + `/onramp/v1/orders/${customOrderId}`;
         let signature3 = calcAuthSigHash(dataVerify3);
     
-        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/orders/${customOrderId}&walletAddress=${walletAddress}`, {
+        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/orders/${customOrderId}&walletAddress=${walletAddress}`, {
             method: "GET",
             redirect: 'follow',
             headers: {
@@ -274,7 +274,7 @@ const createEmbedSdkInstance = () => {
         // Open a blank window immediately
         const newWindow = window.open('', '_blank');
     
-        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
             redirect: 'follow',
             headers: {
                 "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
@@ -328,7 +328,7 @@ const createEmbedSdkInstance = () => {
   const getQuotes = async () => {
     // Build the URL query string from the form values
     const queryString = new URLSearchParams(form).toString();
-    const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/quotes&${queryString}`, {
+    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/quotes&${queryString}`, {
         method: "GET",
         redirect: 'follow',
         headers: {
