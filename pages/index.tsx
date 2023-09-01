@@ -108,7 +108,9 @@ const HomePage: FC = () => {
     };
 
     const getConfig = async () => {
-        const response = await fetch(`https://cors-anywhere-topaz.vercel.app/https://api-sandbox.gatefi.com/onramp/v1/configuration`, {
+        const queryString = new URLSearchParams(form).toString();
+
+        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/configuration`, {
             method: "GET",
             headers: {
                 "access-control-allow-headers": "Accept",
@@ -122,7 +124,7 @@ const HomePage: FC = () => {
     };
 
     const getOrders = async (params) => {
-        const response = await fetch(`https://api-sandbox.gatefi.com/onramp/v1/orders?${params}`, {
+        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/orders&${params}`, {
             method: "GET",
             redirect: 'follow',
             headers: {
@@ -150,7 +152,7 @@ const HomePage: FC = () => {
         let dataVerify3 = "GET" + `/onramp/v1/orders/${customOrderId}`;
         let signature3 = calcAuthSigHash(dataVerify3);
     
-        const response = await fetch(`https://api-sandbox.gatefi.com/onramp/v1/orders/${customOrderId}?walletAddress=${walletAddress}`, {
+        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/orders/${customOrderId}&walletAddress=${walletAddress}`, {
             method: "GET",
             redirect: 'follow',
             headers: {
@@ -265,29 +267,35 @@ const createEmbedSdkInstance = () => {
 
     
     const handleOnClick1 = async () => {
-      instanceSDK?.current?.show()
+        instanceSDK?.current?.show();
+    
+        const randomString = require('crypto').randomBytes(32).toString('hex');
+    
+        // Open a blank window immediately
+        const newWindow = window.open('', '_blank');
+    
+        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+            redirect: 'follow',
+            headers: {
+                "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
+                "signature": signature
+            }
+            
+        });
+        
+        console.log('Response Headers:', [...response.headers]);
 
-      const randomString = require('crypto').randomBytes(32).toString('hex');
-
-  
-
-      const response = await fetch(`https://api-sandbox.gatefi.com/onramp/v1/buy?amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
-          redirect: 'follow',
-          headers: {
-              "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
-              "signature": signature
-          }
-      })
-      if (response.ok) {
-        const finalUrl = response.headers.get('X-Final-Url');
-        if (finalUrl) {
-            window.open(finalUrl, '_blank');
+        if (response.ok) {
+            const finalUrl = response.headers.get('X-Final-Url');
+            if (finalUrl && newWindow) {
+                newWindow.location.href = finalUrl; // Redirect the blank window to the final URL
+            }
+        } else {
+            const data = await response.json();
+            setCryptoWidget(data);
         }
-    } else {
-        const data = await response.json();
-        setCryptoWidget(data);
     }
-  }
+    
 
   const handleOnClickBuyAsset = async () => {
     instanceSDK?.current?.show()
@@ -320,7 +328,7 @@ const createEmbedSdkInstance = () => {
   const getQuotes = async () => {
     // Build the URL query string from the form values
     const queryString = new URLSearchParams(form).toString();
-    const response = await fetch(`https://api-sandbox.gatefi.com/onramp/v1/quotes?${queryString}`, {
+    const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/quotes&${queryString}`, {
         method: "GET",
         redirect: 'follow',
         headers: {
@@ -384,7 +392,7 @@ const createEmbedSdkInstance = () => {
               <button onClick={handleOnClick}>Overlay</button>
               <button onClick={handleOnClickEmbed}>Embed</button>
               <button onClick={handleOnClick1}>Buy Asset API GET</button>
-              <button onClick={handleOnClickBuyAsset}>Buy Asset API PROD</button>
+              {/* <button onClick={handleOnClickBuyAsset}>Buy Asset API PROD</button> */}
               <button onClick={handleHostedFlowClick}>Hosted Flow</button>
 
 
