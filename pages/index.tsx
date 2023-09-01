@@ -30,14 +30,14 @@ const HomePage: FC = () => {
         amount: '100',
         crypto: 'ETH',
         fiat: 'USD',
-        partnerAccountId: 'xxxxxxxxx',
+        partnerAccountId: '9e34f479-b43a-4372-8bdf-90689e16cd5b',
         payment: 'BANKCARD',
         region: 'US',
     });
 
     const [orderParams, setOrderParams] = useState({
         start: "2023-07-22",
-        end: "2023-08-22",
+        end: "2024-08-22",
         limit: "5",
         skip: "0",
     });
@@ -55,7 +55,7 @@ const HomePage: FC = () => {
     var CryptoJS = require("crypto-js");
     console.log(CryptoJS.HmacSHA1("Message", "Key"));
 
-    let secretkey = "xxxxxxxx"
+    let secretkey = "GSLDrYtqLmXDJRHbqtUwDQLwKBbEgPvu"
     let prodSecretkey = "xxxxxxxx"
 
 
@@ -113,7 +113,7 @@ const HomePage: FC = () => {
             headers: {
                 "access-control-allow-headers": "Accept",
                 "signature": signatureConfig,
-                "api-key": "xxxxxxxx",
+                "api-key": "VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq",
             }
         });
         const data = await response.json();
@@ -128,7 +128,7 @@ const HomePage: FC = () => {
             headers: {
                 "access-control-allow-headers": "Accept",
                 "signature": signature2,
-                "api-key": "xxxxxxxx",
+                "api-key": "VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq",
             }
         });
         const data = await response.json();
@@ -156,7 +156,7 @@ const HomePage: FC = () => {
             headers: {
                 "access-control-allow-headers": "Accept",
                 "signature": signature3,
-                "api-key": "xxxxxxxx",
+                "api-key": "VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq",
             }
         });
         const data = await response.json();
@@ -185,12 +185,12 @@ const createOverlaySdkInstance = () => {
     const randomString = require('crypto').randomBytes(32).toString('hex');
 
     overlayInstanceSDK.current = typeof document !== 'undefined' && new GateFiSDK({
-        merchantId: "xxxxxxxx",
+        merchantId: "9e34f479-b43a-4372-8bdf-90689e16cd5b",
         displayMode: GateFiDisplayModeEnum.Overlay,
         nodeSelector: "#overlay-button",
-        isSandbox: false,
+        isSandbox: true,
         walletAddress: "0xc458f721D11325E38f781a9C58055de489178BF2",
-        email: "dgdagda@unlimit.com",
+        email: "d.dadkhoo@unlimit.com",
         externalId: randomString,
         defaultFiat: {
             currency: "EUR",
@@ -238,12 +238,12 @@ const createEmbedSdkInstance = () => {
     const randomString = require('crypto').randomBytes(32).toString('hex');
 
     embedInstanceSDK.current = typeof document !== 'undefined' && new GateFiSDK({
-        merchantId: "xxxxxxxx",
+        merchantId: "9e34f479-b43a-4372-8bdf-90689e16cd5b",
         displayMode: GateFiDisplayModeEnum.Embedded,
         nodeSelector: "#embed-button",
         isSandbox: true,
         walletAddress: "0xc458h721D11322E34f781a9C58055de489178BF2",
-        email: "ddafadfa@unlimit.com",
+        email: "d.dadkhoo@unlimit.com",
         externalId: randomString,
         defaultFiat: {
             currency: "USD",
@@ -271,10 +271,10 @@ const createEmbedSdkInstance = () => {
 
   
 
-      const response = await fetch(`http://localhost:8080/https://api-sandbox.gatefi.com/onramp/v1/buy?amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=xxxxxxxx&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+      const response = await fetch(`http://localhost:8080/https://api-sandbox.gatefi.com/onramp/v1/buy?amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
           redirect: 'follow',
           headers: {
-              "api-key": 'xxxxxxxx',
+              "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
               "signature": signature
           }
       })
@@ -326,7 +326,7 @@ const createEmbedSdkInstance = () => {
         headers: {
             "access-control-allow-headers": "Accept",
             "signature": signature1,
-            "api-key": "xxxxxxxx"
+            "api-key": "VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq"
         }
     });
     
@@ -392,7 +392,7 @@ const createEmbedSdkInstance = () => {
       
             {showIframe && (
               <iframe
-                src="https://onramp-sandbox.gatefi.com/?merchantId=xxxxxxxx"
+                src="https://onramp-sandbox.gatefi.com/?merchantId=9e34f479-b43a-4372-8bdf-90689e16cd5b"
                 style={{ width: '100%', height: '600px', margin: '10px' }}
               />
             )}
