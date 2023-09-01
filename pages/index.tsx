@@ -110,7 +110,7 @@ const HomePage: FC = () => {
     const getConfig = async () => {
         const queryString = new URLSearchParams(form).toString();
 
-        const response = await fetch(`https://unlimit-live-demo.vercel.app/api/proxy?endpoint=/onramp/v1/configuration`, {
+        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/configuration`, {
             method: "GET",
             headers: {
                 "access-control-allow-headers": "Accept",
