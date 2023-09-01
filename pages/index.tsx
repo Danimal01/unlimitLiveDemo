@@ -108,7 +108,7 @@ const HomePage: FC = () => {
     };
 
     const getConfig = async () => {
-        const response = await fetch(`https://api-sandbox.gatefi.com/onramp/v1/configuration`, {
+        const response = await fetch(`https://cors-anywhere-topaz.vercel.app/https://api-sandbox.gatefi.com/onramp/v1/configuration`, {
             method: "GET",
             headers: {
                 "access-control-allow-headers": "Accept",
