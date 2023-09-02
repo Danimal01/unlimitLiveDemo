@@ -280,20 +280,24 @@ const createEmbedSdkInstance = () => {
                 "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
                 "signature": signature
             }
-            
         });
         
         console.log('Response Headers:', [...response.headers]);
-
-        if (response.ok) {
+        
+        const externalApiUrl = response.headers.get('X-External-Api-Url');
+        
+        if (externalApiUrl && newWindow) {
+            newWindow.location.href = externalApiUrl;
+        } else if (response.ok) {
             const finalUrl = response.headers.get('X-Final-Url');
             if (finalUrl && newWindow) {
-                newWindow.location.href = finalUrl; // Redirect the blank window to the final URL
+                newWindow.location.href = finalUrl;
             }
         } else {
             const data = await response.json();
             setCryptoWidget(data);
         }
+        
     }
     
 

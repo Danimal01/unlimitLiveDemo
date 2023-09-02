@@ -9,13 +9,15 @@ module.exports = async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const queryString = new URLSearchParams(parsedUrl.query).toString().replace("endpoint=" + encodeURIComponent(endpoint), "");
     const apiUrl = `https://api-sandbox.gatefi.com${endpoint}?${queryString}`;
-
+    
+    
+    console.log("Incoming headers:", req.headers);
+    console.log("API URL:", apiUrl);
+    console.log("Request:", req);
     try {
         const response = await fetch(apiUrl, {
             method: req.method,
-            mode: 'no-cors',
             headers: {
-                "access-control-allow-headers": "Accept",
                 "signature": req.headers.signature,
                 "api-key": req.headers["api-key"],
             }
@@ -23,7 +25,15 @@ module.exports = async (req, res) => {
 
         const contentType = response.headers.get("content-type");
 
-        
+
+
+        console.log("Response from external API:", response);
+        console.log("Response headers from external API:", [...response.headers]);
+
+        const externalApiUrl = response.url;
+        res.setHeader('X-External-Api-Url', externalApiUrl);
+
+
         
         // Extract the X-Final-Url header from the original response
         const finalUrl = response.headers.get('X-Final-Url');
