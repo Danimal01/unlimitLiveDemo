@@ -2,8 +2,10 @@
 
 In order for all components of the app to work, you must enter in your unique keys and partnerAccountd within the code.
 
-1) Pull and Run https://github.com/Rob--W/cors-anywhere in order to get a CORS proxy going so you do not run into CORS problems testing on local
-2) Run npm i
-3) Run npm run dev
-4) change the secret key, api key, and partnerAccountd id within the code
+1) Run npm i
+2) Run npm run dev
+3) Change the secret key, api key, and partnerAccountd id within the code
 
+This app is deployed using Vercel- https://vercel.com/danimal01/unlimit-live-demo
+
+Using Vercel, we have created serverless functions that acts as a proxy for our API requests.
