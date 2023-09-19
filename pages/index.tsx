@@ -19,10 +19,21 @@ const HomePage: FC = () => {
     const [singleOrderResponse, setSingleOrderResponse] = useState(null);
     const [showSingleOrderResponse, setShowSingleOrderResponse] = useState(false);
     const [config, setConfig] = useState(null);
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+    const overlayInstanceSDK = useRef<GateFiSDK | null>(null);
+    const embedInstanceSDK = useRef<GateFiSDK | null>(null);
 
 
-    const overlayInstanceSDK = useRef(null);
-    const embedInstanceSDK = useRef(null);
+    useEffect(() => {
+        return () => {
+          overlayInstanceSDK.current?.destroy();
+          overlayInstanceSDK.current = null;
+          embedInstanceSDK.current?.destroy();
+          embedInstanceSDK.current = null;
+        };
+      }, []);
+
 
     // State to hold the form values
     // Initial state for the form
@@ -168,167 +179,7 @@ const HomePage: FC = () => {
     }; 
 
 
-
-
-        
-
-const handleOnClickEmbed = () => {
-    if (!embedInstanceSDK.current) {
-        createEmbedSdkInstance();
-    }
-
-    embedInstanceSDK?.current?.show()
-}
-
-let isOverlayVisible = false; // A flag to keep track of the overlay's visibility status
-
-// Function to create a new overlay SDK instance
-const createOverlaySdkInstance = () => {
-    const randomString = require('crypto').randomBytes(32).toString('hex');
-
-    overlayInstanceSDK.current = typeof document !== 'undefined' && new GateFiSDK({
-        merchantId: "9e34f479-b43a-4372-8bdf-90689e16cd5b",
-        displayMode: GateFiDisplayModeEnum.Overlay,
-        nodeSelector: "#overlay-button",
-        isSandbox: true,
-        walletAddress: "0xc458f721D11325E38f781a9C58055de489178BF2",
-        email: "d.dadkhoo@unlimit.com",
-        externalId: randomString,
-        defaultFiat: {
-            currency: "EUR",
-            amount: "500",
-        },
-        defaultCrypto: {
-            currency: "BTC"
-        },
-    })
-}
-
-const handleOnClick = () => {
-    if (!overlayInstanceSDK.current) {
-        createOverlaySdkInstance();
-
-        const targetNode = document.getElementById('overlay-button');
-        const observerOptions = {
-            childList: true,
-        }
-        const observer = new MutationObserver((mutationsList, observer) => {
-            for(let mutation of mutationsList) {
-                if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {
-                    overlayInstanceSDK.current.destroy();
-                    overlayInstanceSDK.current = null;
-
-                    observer.disconnect();
-                }
-            }
-        });
-        observer.observe(targetNode, observerOptions);
-    }
-
-    // Toggle the overlay visibility
-    if (isOverlayVisible) {
-        overlayInstanceSDK?.current?.hide();
-        isOverlayVisible = false;
-    } else {
-        overlayInstanceSDK?.current?.show();
-        isOverlayVisible = true;
-    }
-}
-
-// Function to create a new embed SDK instance
-const createEmbedSdkInstance = () => {
-    const randomString = require('crypto').randomBytes(32).toString('hex');
-
-    embedInstanceSDK.current = typeof document !== 'undefined' && new GateFiSDK({
-        merchantId: "9e34f479-b43a-4372-8bdf-90689e16cd5b",
-        displayMode: GateFiDisplayModeEnum.Embedded,
-        nodeSelector: "#embed-button",
-        isSandbox: true,
-        walletAddress: "0xc458h721D11322E34f781a9C58055de489178BF2",
-        email: "d.dadkhoo@unlimit.com",
-        externalId: randomString,
-        defaultFiat: {
-            currency: "USD",
-            amount: "30",
-        },
-        defaultCrypto: {
-            currency: "ETH"
-        },
-    })
-}
-
-    // Function to handle 'Hosted Flow' button click
-    const handleHostedFlowClick = () => {
-        setShowIframe(true)
-    }
-
-
-
-
-    
-    const handleOnClick1 = async () => {
-        instanceSDK?.current?.show();
-    
-        const randomString = require('crypto').randomBytes(32).toString('hex');
-    
-        // Open a blank window immediately
-        const newWindow = window.open('', '_blank');
-    
-        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
-            redirect: 'follow',
-            headers: {
-                "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
-                "signature": signature
-            }
-        });
-        
-        console.log('Response Headers:', [...response.headers]);
-        
-        const externalApiUrl = response.headers.get('X-External-Api-Url');
-        
-        if (externalApiUrl && newWindow) {
-            newWindow.location.href = externalApiUrl;
-        } else if (response.ok) {
-            const finalUrl = response.headers.get('X-Final-Url');
-            if (finalUrl && newWindow) {
-                newWindow.location.href = finalUrl;
-            }
-        } else {
-            const data = await response.json();
-            setCryptoWidget(data);
-        }
-        
-    }
-    
-
-  const handleOnClickBuyAsset = async () => {
-    instanceSDK?.current?.show()
-
-    const randomString = require('crypto').randomBytes(32).toString('hex');
-
-
-
-    const response = await fetch(`https://api.gatefi.com/onramp/v1/buy?amount=1000&crypto=ETH&fiat=MXN&orderCustomId=${randomString}&partnerAccountId=xxxxxxxx&payment=BANKCARD_MX&redirectUrl=https://www.google.com/&region=HK&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
-        redirect: 'follow',
-        headers: {
-            "api-key": 'xxxxxxxx',
-            "signature": signatureBuyAssetProd
-        }
-    })
-    if (response.ok) {
-      const finalUrl = response.headers.get('X-Final-Url');
-      if (finalUrl) {
-          window.open(finalUrl, '_blank');
-      }
-  } else {
-      const data = await response.json();
-      setCryptoWidget(data);
-  }
-}
-
-
-
-//TEST NET
+    //TEST NET
   const getQuotes = async () => {
     // Build the URL query string from the form values
     const queryString = new URLSearchParams(form).toString();
@@ -382,6 +233,132 @@ const createEmbedSdkInstance = () => {
 
 
 
+    const handleOnClick = () => {
+        if (overlayInstanceSDK.current) {
+          if (isOverlayVisible) {
+            overlayInstanceSDK.current.hide();
+            setIsOverlayVisible(false);
+          } else {
+            overlayInstanceSDK.current.show();
+            setIsOverlayVisible(true);
+          }
+        } else {
+          const randomString = require('crypto').randomBytes(32).toString('hex');
+          overlayInstanceSDK.current = new GateFiSDK({
+            merchantId: "9e34f479-b43a-4372-8bdf-90689e16cd5b",
+            displayMode: GateFiDisplayModeEnum.Overlay,
+            nodeSelector: "#overlay-button",
+            isSandbox: true,
+            walletAddress: "0xc458f721D11325E38f781a9C58055de489178BF2",
+            email: "d.dadkhoo@unlimit.com",
+            externalId: randomString,
+            defaultFiat: {
+              currency: "EUR",
+              amount: "500",
+            },
+            defaultCrypto: {
+              currency: "BTC"
+            },
+          });
+        }
+      
+        overlayInstanceSDK.current?.show();
+        setIsOverlayVisible(true);
+      };
+      
+
+  
+
+// Function to create a new embed SDK instance
+const createEmbedSdkInstance = () => {
+    const randomString = require('crypto').randomBytes(32).toString('hex');
+
+    embedInstanceSDK.current = typeof document !== 'undefined' && new GateFiSDK({
+        merchantId: "9e34f479-b43a-4372-8bdf-90689e16cd5b",
+        displayMode: GateFiDisplayModeEnum.Embedded,
+        nodeSelector: "#embed-button",
+        isSandbox: true,
+        walletAddress: "0xc458h721D11322E34f781a9C58055de489178BF2",
+        email: "d.dadkhoo@unlimit.com",
+        externalId: randomString,
+        defaultFiat: {
+            currency: "USD",
+            amount: "30",
+        },
+        defaultCrypto: {
+            currency: "ETH"
+        },
+    })
+}
+
+const handleOnClickEmbed = () => {
+    if (showIframe) {
+        embedInstanceSDK.current?.hide();
+        setShowIframe(false);
+    } else {
+        if (!embedInstanceSDK.current) {
+            createEmbedSdkInstance();
+        }
+        embedInstanceSDK.current?.show();
+        setShowIframe(true);
+    }
+};
+
+const handleCloseEmbed = () => {
+    embedInstanceSDK.current?.destroy();
+    embedInstanceSDK.current = null;
+    setShowIframe(false);
+};
+
+    const handleHostedFlowClick = () => {
+        const url = "https://onramp-sandbox.gatefi.com/?merchantId=9e34f479-b43a-4372-8bdf-90689e16cd5b";
+        window.open(url, "_blank");
+    };
+
+
+
+
+    
+    const handleOnClick1 = async () => {
+        instanceSDK?.current?.show();
+    
+        const randomString = require('crypto').randomBytes(32).toString('hex');
+    
+        // Open a blank window immediately
+        const newWindow = window.open('', '_blank');
+    
+        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+            redirect: 'follow',
+            headers: {
+                "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
+                "signature": signature
+            }
+        });
+        
+        console.log('Response Headers:', [...response.headers]);
+        
+        const externalApiUrl = response.headers.get('X-External-Api-Url');
+        
+        if (externalApiUrl && newWindow) {
+            newWindow.location.href = externalApiUrl;
+        } else if (response.ok) {
+            const finalUrl = response.headers.get('X-Final-Url');
+            if (finalUrl && newWindow) {
+                newWindow.location.href = finalUrl;
+            }
+        } else {
+            const data = await response.json();
+            setCryptoWidget(data);
+        }
+        
+    }
+    
+
+
+
+
+
+
 
     
 
@@ -398,20 +375,32 @@ const createEmbedSdkInstance = () => {
               <button onClick={handleOnClick1}>Buy Asset API GET</button>
               {/* <button onClick={handleOnClickBuyAsset}>Buy Asset API PROD</button> */}
               <button onClick={handleHostedFlowClick}>Hosted Flow</button>
-
-
             </div>
       
-            {showIframe && (
-              <iframe
-                src="https://onramp-sandbox.gatefi.com/?merchantId=9e34f479-b43a-4372-8bdf-90689e16cd5b"
-                style={{ width: '100%', height: '600px', margin: '10px' }}
-              />
-            )}
 
             <div id="overlay-button"></div>
-            <div id="embed-button"></div>
-
+            <div style={{ position: 'relative' }}>
+                <div id="embed-button"></div>
+                    {showIframe && (
+                    <button
+                        onClick={handleCloseEmbed}
+                        style={{
+                        position: "absolute",
+                        top: "15px",
+                        right: "52px",
+                        background: "rgb(201, 247, 58)",
+                        color: "black",
+                        border: "none",
+                        borderRadius: "5px",
+                        padding: "5px 10px",
+                        cursor: "pointer",
+                        zIndex: 10 // ensure it's above the embedded widget
+                        }}
+                    >
+                        Close
+                    </button>
+                    )}
+                </div>
             {/* Form for the query parameters */}
             <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
               <h3>Get Quotes</h3>
