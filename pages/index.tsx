@@ -3,6 +3,7 @@ import { FC, useRef, useEffect,useState  } from 'react'
 import sha256 from 'crypto-js/sha256';
 import hmacSHA512 from 'crypto-js/hmac-sha512';
 import Base64 from 'crypto-js/enc-base64';
+import crypto from "crypto-browserify";
 
 
 
@@ -93,14 +94,14 @@ const HomePage: FC = () => {
 
     console.log(calcAuthSigHash(dataVerify))
 
-    console.log('Quotes Sig Test', calcAuthSigHash(dataVerify1))
-    console.log(calcAuthSigHash(dataVerify2))
-    console.log('get single order',calcAuthSigHash(dataVerify3))
-    console.log('buybuybuy',calcAuthSigHash(dataVerify4))
+    // console.log('Quotes Sig Test', calcAuthSigHash(dataVerify1))
+    // console.log(calcAuthSigHash(dataVerify2))
+    // console.log('get single order',calcAuthSigHash(dataVerify3))
+    // console.log('buybuybuy',calcAuthSigHash(dataVerify4))
 
-    console.log('Prod get quotes',calcAuthSigHashProd(dataVerify1))
-    console.log('Prod buy Asset',calcAuthSigHashProd(dataVerify4))
-    console.log('Config Prod',calcAuthSigHashProd(dataVerify))
+    // console.log('Prod get quotes',calcAuthSigHashProd(dataVerify1))
+    // console.log('Prod buy Asset',calcAuthSigHashProd(dataVerify4))
+    // console.log('Config Prod',calcAuthSigHashProd(dataVerify))
 
     let signatureConfig = calcAuthSigHash(dataVerify)
     let signature = calcAuthSigHash(dataVerify4)
@@ -196,6 +197,40 @@ const HomePage: FC = () => {
     const data = await response.json();  // You probably want the JSON response, not the URL
     setQuotes(data);
 
+}
+
+const handleOnClick1 = async () => {
+    instanceSDK?.current?.show();
+
+    const randomString = require('crypto').randomBytes(32).toString('hex');
+
+    // Open a blank window immediately
+    const newWindow = window.open('', '_blank');
+
+    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+        redirect: 'follow',
+        headers: {
+            "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
+            "signature": signature
+        }
+    });
+    
+    console.log('Response Headers:', [...response.headers]);
+    
+    const externalApiUrl = response.headers.get('X-External-Api-Url');
+    
+    if (externalApiUrl && newWindow) {
+        newWindow.location.href = externalApiUrl;
+    } else if (response.ok) {
+        const finalUrl = response.headers.get('X-Final-Url');
+        if (finalUrl && newWindow) {
+            newWindow.location.href = finalUrl;
+        }
+    } else {
+        const data = await response.json();
+        setCryptoWidget(data);
+    }
+    
 }
 
 
@@ -318,49 +353,6 @@ const handleCloseEmbed = () => {
 
 
 
-    
-    const handleOnClick1 = async () => {
-        instanceSDK?.current?.show();
-    
-        const randomString = require('crypto').randomBytes(32).toString('hex');
-    
-        // Open a blank window immediately
-        const newWindow = window.open('', '_blank');
-    
-        const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
-            redirect: 'follow',
-            headers: {
-                "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
-                "signature": signature
-            }
-        });
-        
-        console.log('Response Headers:', [...response.headers]);
-        
-        const externalApiUrl = response.headers.get('X-External-Api-Url');
-        
-        if (externalApiUrl && newWindow) {
-            newWindow.location.href = externalApiUrl;
-        } else if (response.ok) {
-            const finalUrl = response.headers.get('X-Final-Url');
-            if (finalUrl && newWindow) {
-                newWindow.location.href = finalUrl;
-            }
-        } else {
-            const data = await response.json();
-            setCryptoWidget(data);
-        }
-        
-    }
-    
-
-
-
-
-
-
-
-    
 
     return (
         <>
