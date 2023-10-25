@@ -4,6 +4,7 @@ import crypto from 'crypto';
 
 
 
+
 const HomePage: FC = () => {
     const instanceSDK = useRef<any>()
     const [cryptoWidget, setCryptoWidget] = useState(null)
@@ -18,6 +19,7 @@ const HomePage: FC = () => {
     const [showSingleOrderResponse, setShowSingleOrderResponse] = useState(false);
     const [config, setConfig] = useState(null);
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+    const [activeTab, setActiveTab] = useState('SDK and Hosted Flow'); // Default tab is "SDK and Hosted Flow"
 
     const overlayInstanceSDK = useRef<GateFiSDK | null>(null);
     const embedInstanceSDK = useRef<GateFiSDK | null>(null);
@@ -386,150 +388,194 @@ const handleCloseEmbed = () => {
 
 
     return (
-        <>
-        
+      <>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h2>Unlimit Crypto </h2>
+              <h2>Unlimit Crypto</h2>
       
+              <div style={{ display: 'flex', marginBottom: '20px' }}>
+        <button 
+            style={{ 
+                padding: '10px 20px', 
+                marginRight: '10px', 
+                backgroundColor: activeTab === 'SDK and Hosted Flow' ? '#ccc' : 'transparent',
+                border: '1px solid #ddd',
+                borderRadius: '5px'
+            }}
+            onClick={() => setActiveTab('SDK and Hosted Flow')}
+        >
+            SDK and Hosted Flow
+        </button>
+        <button 
+            style={{ 
+                padding: '10px 20px', 
+                backgroundColor: activeTab === 'APIs' ? '#ccc' : 'transparent',
+                border: '1px solid #ddd',
+                borderRadius: '5px'
+            }}
+            onClick={() => setActiveTab('APIs')}
+        >
+            APIs
+        </button>
+    </div>
       
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
-              <button onClick={handleOnClick}>Overlay</button>
-              <button onClick={handleOnClickEmbed}>Embed</button>
-              <button onClick={buyAssetAPI}>Buy Asset API GET</button>
-              {/* <button onClick={handleOnClickProd}>Overlay Prod</button> */}
-              <button onClick={handleHostedFlowClick}>Hosted Flow</button>
-              <button onClick={getConfig}>Get Config</button>
-            </div>
-            {config && (
-                <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
-                    <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setConfig(null)}>X</button>
-                    <pre>{JSON.stringify(config, null, 2)}</pre>
-                </div>
-            )}
+              {/* Content based on active tab */}
+              {activeTab === 'SDK and Hosted Flow' && (
+    <div style={{ display: 'block', justifyContent: 'center', gap: '20px', marginTop: '20px', textAlign: 'center' }}>
+        <div style={{ marginBottom: '20px' }}>
+            <button onClick={handleOnClick}>Overlay</button>
+            <button onClick={handleOnClickEmbed}>Embed</button>
+            <button onClick={handleHostedFlowClick}>Hosted Flow</button>
+        </div>
 
-            <div id="overlay-button"></div>
-            <div style={{ position: 'relative' }}>
-                <div id="embed-button"></div>
-                    {showIframe && (
-                    <button
-                        onClick={handleCloseEmbed}
-                        style={{
+        <div id="overlay-button"></div>
+        <div style={{ position: 'relative', border: '1px solid #ddd', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+            <div id="embed-button"></div>
+            {showIframe && (
+                <button
+                    onClick={handleCloseEmbed}
+                    style={{
                         position: "absolute",
-                        top: "15px",
-                        right: "52px",
-                        background: "rgb(201, 247, 58)",
-                        color: "black",
+                        right: "113px",
+                        transform: "none",
+                        top: "10px",                        
+                        background: "rgba(0, 0, 0, 0.7)",
+                        color: "#fff",
                         border: "none",
                         borderRadius: "5px",
-                        padding: "5px 10px",
+                        padding: "5px 15px",
                         cursor: "pointer",
-                        zIndex: 10 // ensure it's above the embedded widget
-                        }}
-                    >
-                        Close
-                    </button>
-                    )}
+                        zIndex: 2000, // ensure it's above the embedded widget
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}
+                >
+                    Close
+                </button>
+            )}
+        </div>
+    </div>
+)}
+
+
+    
+              {activeTab === 'APIs' && (
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', marginTop: '10px' }}>
+                    
+                {/* Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginRight: '20px' }}>
+                    <button onClick={buyAssetAPI}>Buy Asset API GET</button>
+                    <button onClick={getConfig}>Get Config</button>
                 </div>
-            {/* Form for the query parameters */}
-            <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
-              <h3>Get Quotes</h3>
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'row', gap: '10px', flexWrap: 'wrap' }}>
-                <label>
-                  Amount:
-                  <input type="number" name="amount" value={form.amount} onChange={handleChange} required />
-                </label>
-                <label>
-                  Crypto:
-                  <input type="text" name="crypto" value={form.crypto} onChange={handleChange} required />
-                </label>
-                <label>
-                  Fiat:
-                  <input type="text" name="fiat" value={form.fiat} onChange={handleChange} required />
-                </label>
-                <label>
-                  Partner Account ID:
-                  <input type="text" name="partnerAccountId" value={form.partnerAccountId} onChange={handleChange} required />
-                </label>
-                <label>
-                  Payment:
-                  <input type="text" name="payment" value={form.payment} onChange={handleChange} required />
-                </label>
-                <label>
-                  Region:
-                  <input type="text" name="region" value={form.region} onChange={handleChange} required />
-                </label>
-                <button type="submit">Get Quotes</button>
-              </form>
-            </div>
-      
-            {/* Display the quotes */}
-            {showQuotesResponse && quotes && (
+    
+    
+                {/* Form for the query parameters */}
+                <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
+                  <h3>Get Quotes</h3>
+                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <label>
+                      Amount:
+                      <input type="number" name="amount" value={form.amount} onChange={handleChange} required />
+                    </label>
+                    <label>
+                      Crypto:
+                      <input type="text" name="crypto" value={form.crypto} onChange={handleChange} required />
+                    </label>
+                    <label>
+                      Fiat:
+                      <input type="text" name="fiat" value={form.fiat} onChange={handleChange} required />
+                    </label>
+                    <label>
+                      Partner Account ID:
+                      <input type="text" name="partnerAccountId" value={form.partnerAccountId} onChange={handleChange} required />
+                    </label>
+                    <label>
+                      Payment:
+                      <input type="text" name="payment" value={form.payment} onChange={handleChange} required />
+                    </label>
+                    <label>
+                      Region:
+                      <input type="text" name="region" value={form.region} onChange={handleChange} required />
+                    </label>
+                    <button type="submit">Get Quotes</button>
+                  </form>
+                </div>
+          
+                {/* Display the quotes */}
+                {showQuotesResponse && quotes && (
             <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
-                <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setShowQuotesResponse(false)}>X</button>
-                <pre>{JSON.stringify(quotes, null, 2)}</pre>
-            </div>
-            )}
-      
-            {/* Form for order parameters */}
-            <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
-              <h3>Get Orders</h3>
-              <form onSubmit={handleOrderFormSubmit} style={{ display: 'flex', flexDirection: 'row', gap: '10px', flexWrap: 'wrap' }}>
-                <label>
-                  Start Date:
-                  <input type="date" name="start" value={orderParams.start} onChange={handleOrderParamChange} />
-                </label>
-                <label>
-                  End Date:
-                  <input type="date" name="end" value={orderParams.end} onChange={handleOrderParamChange} />
-                </label>
-                <label>
-                  Limit:
-                  <input type="number" name="limit" value={orderParams.limit} onChange={handleOrderParamChange} />
-                </label>
-                <label>
-                  Skip:
-                  <input type="number" name="skip" value={orderParams.skip} onChange={handleOrderParamChange} />
-                </label>
-                <button type="submit">Get Orders</button>
-              </form>
-            </div>
-      
-            {showApiResponse && apiResponse && (
-              <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
-                <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setShowApiResponse(false)}>X</button>
-                <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
-              </div>
-            )}
-
-            
-            <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
-                <h3>Get Single Order</h3>
-                <form onSubmit={getSingleOrder} style={{ display: 'flex', flexDirection: 'row', gap: '10px', flexWrap: 'wrap' }}>
-                <label>
-                    Custom Order ID:
-                    <input type="text" name="customOrderId" value={customOrderId} onChange={handleCustomOrderIdChange} required />
-                </label>
-                <label>
-                    Wallet Address:
-                    <input type="text" name="walletAddress" value={walletAddress} onChange={handleWalletAddressChange} required />
-                </label>
-                <button type="submit">Get Single Order</button>
-                </form>
-            </div>
-
-            {/* Display the single order */}
-            {showSingleOrderResponse && singleOrderResponse && (
-            <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
-                <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setShowSingleOrderResponse(false)}>X</button>
-                <pre>{JSON.stringify(singleOrderResponse, null, 2)}</pre>
-            </div>
-            )}
-
-      
+            <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setShowQuotesResponse(false)}>X</button>
+                    <pre>{JSON.stringify(quotes, null, 2)}</pre>
+                </div>
+                )}
+          
+                {/* Form for order parameters */}
+                <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
+                  <h3>Get Orders</h3>
+                  <form onSubmit={handleOrderFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <label>
+                      Start Date:
+                      <input type="date" name="start" value={orderParams.start} onChange={handleOrderParamChange} />
+                    </label>
+                    <label>
+                      End Date:
+                      <input type="date" name="end" value={orderParams.end} onChange={handleOrderParamChange} />
+                    </label>
+                    <label>
+                      Limit:
+                      <input type="number" name="limit" value={orderParams.limit} onChange={handleOrderParamChange} />
+                    </label>
+                    <label>
+                      Skip:
+                      <input type="number" name="skip" value={orderParams.skip} onChange={handleOrderParamChange} />
+                    </label>
+                    <button type="submit">Get Orders</button>
+                  </form>
+                </div>
+          
+                {showApiResponse && apiResponse && (
+                  <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
+                    <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setShowApiResponse(false)}>X</button>
+                    <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+                  </div>
+                )}
+    
+                
+                <div style={{ border: '1px solid #000', padding: '10px', borderRadius: '5px', margin: '10px', maxWidth: '500px' }}>
+                    <h3>Get Single Order</h3>
+                    <form onSubmit={getSingleOrder} style={{ display: 'flex', flexDirection: 'row', gap: '10px', flexWrap: 'wrap' }}>
+                    <label>
+                        Custom Order ID:
+                        <input type="text" name="customOrderId" value={customOrderId} onChange={handleCustomOrderIdChange} required />
+                    </label>
+                    <label>
+                        Wallet Address:
+                        <input type="text" name="walletAddress" value={walletAddress} onChange={handleWalletAddressChange} required />
+                    </label>
+                    <button type="submit">Get Single Order</button>
+                    </form>
+                </div>
+    
+                {/* Display the single order */}
+                {showSingleOrderResponse && singleOrderResponse && (
+                <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
+                    <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setShowSingleOrderResponse(false)}>X</button>
+                    <pre>{JSON.stringify(singleOrderResponse, null, 2)}</pre>
+                </div>
+                )}
+                  </div>
+              )}
+    
+    {config && (
+                    <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
+                        <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setConfig(null)}>X</button>
+                        <pre>{JSON.stringify(config, null, 2)}</pre>
+                    </div>
+                )}
           </div>
-        </>
-      )
-      
-}
+
+          
+      </>
+    );
+    
+    }
 
 export default HomePage;
