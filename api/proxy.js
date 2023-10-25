@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const secretKey = process.env.SECRET_KEY;
 const apiKey = process.env.API_KEY;
 
+
 // Hash the secret key with the data using the native Node.js crypto module
 function calcAuthSigHash(data) {
     const hmac = crypto.createHmac('sha256', secretKey);
@@ -12,6 +13,8 @@ function calcAuthSigHash(data) {
 }
 
 module.exports = async (req, res) => {
+    console.log("SECRET_KEY:", secretKey);
+    console.log("API_KEY:", apiKey);
     const endpoint = req.query.endpoint;
     const url = require('url');
 
