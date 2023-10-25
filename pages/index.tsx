@@ -1,9 +1,6 @@
-import { GateFiEventTypes, GateFiDisplayModeEnum, GateFiSDK } from '@gatefi/js-sdk'
+import { GateFiDisplayModeEnum, GateFiLangEnum, GateFiSDK } from '@gatefi/js-sdk'
 import { FC, useRef, useEffect,useState  } from 'react'
-import sha256 from 'crypto-js/sha256';
-import hmacSHA512 from 'crypto-js/hmac-sha512';
-import Base64 from 'crypto-js/enc-base64';
-import crypto from "crypto-browserify";
+import crypto from 'crypto';
 
 
 
@@ -64,50 +61,58 @@ const HomePage: FC = () => {
         setWalletAddress(e.target.value);
     };
 
-    var CryptoJS = require("crypto-js");
-    console.log(CryptoJS.HmacSHA1("Message", "Key"));
+  
 
     let secretkey = "GSLDrYtqLmXDJRHbqtUwDQLwKBbEgPvu"
-    let prodSecretkey = "xxxxxxxx"
+    let prodSecretkey = "xxxx"
+
+
 
 
     //string will be method + api path
     let dataVerify = "GET" + "/onramp/v1/configuration";
     let dataVerify1 = "GET" + "/onramp/v1/quotes";
     let dataVerify2 = "GET" + "/onramp/v1/orders";
-    let dataVerify3 = "GET" + "/onramp/v1/orders/d0c0e8bd3bb169dbc29a9db673391694f989e300e7ca9ed18dda0202215b9981";
+    let dataVerify3 = "GET" + "/onramp/v1/orders/184f5c5a1c25fd89536a00b626e9f44a6decbe10ab806292ccd4e5a5e199b496";
     let dataVerify4 = "GET" + "/onramp/v1/buy";
-
+    let GetOrdersPath = "GET" + "/onramp/v1/orders";
 
 
     // Hash the secret key with the data
-    function calcAuthSigHash(data) {
-      let hash = CryptoJS.HmacSHA256(data, secretkey);
-      return CryptoJS.enc.Hex.stringify(hash);
-    }
+    function calcAuthSigHash(data, key) {
+      const hmac = crypto.createHmac('sha256', key);
+      hmac.update(data);
+      return hmac.digest('hex');
+  }
+  
 
     // Hash the secret key with the data
     function calcAuthSigHashProd(data) {
-        let hash = CryptoJS.HmacSHA256(data, prodSecretkey);
-        return CryptoJS.enc.Hex.stringify(hash);
+      const hmac = crypto.createHmac('sha256', prodSecretkey);
+      hmac.update(data);
+      return hmac.digest('hex');
         }
 
-    console.log(calcAuthSigHash(dataVerify))
+        console.log(calcAuthSigHash(dataVerify, secretkey))
 
     // console.log('Quotes Sig Test', calcAuthSigHash(dataVerify1))
     // console.log(calcAuthSigHash(dataVerify2))
-    // console.log('get single order',calcAuthSigHash(dataVerify3))
-    // console.log('buybuybuy',calcAuthSigHash(dataVerify4))
+    console.log('get single order',calcAuthSigHashProd(dataVerify3))
+    console.log('API BUY PROD',calcAuthSigHashProd(dataVerify4))
+    console.log('QUOOOTES PROODDDD',calcAuthSigHashProd(dataVerify1))
 
     // console.log('Prod get quotes',calcAuthSigHashProd(dataVerify1))
     // console.log('Prod buy Asset',calcAuthSigHashProd(dataVerify4))
     // console.log('Config Prod',calcAuthSigHashProd(dataVerify))
 
-    let signatureConfig = calcAuthSigHash(dataVerify)
-    let signature = calcAuthSigHash(dataVerify4)
-    let signature1 = calcAuthSigHash(dataVerify1)
-    let signature2 = calcAuthSigHash(dataVerify2)
-    let signature3 = calcAuthSigHash(dataVerify3)
+    console.log('Config Prod',calcAuthSigHashProd(dataVerify))
+    console.log('Get Orders Prod',calcAuthSigHashProd(GetOrdersPath))
+
+    let signatureConfig = calcAuthSigHash(dataVerify, secretkey)
+    let signature = calcAuthSigHash(dataVerify4, secretkey)
+    let signature1 = calcAuthSigHash(dataVerify1, secretkey)
+    let signature2 = calcAuthSigHash(dataVerify2, secretkey)
+    let signature3 = calcAuthSigHash(dataVerify3, secretkey)
     let signatureBuyAssetProd = calcAuthSigHashProd(dataVerify4)
 
     let signatureQuotesProd = calcAuthSigHashProd(dataVerify1)
@@ -162,7 +167,7 @@ const HomePage: FC = () => {
         e.preventDefault();
 
         let dataVerify3 = "GET" + `/onramp/v1/orders/${customOrderId}`;
-        let signature3 = calcAuthSigHash(dataVerify3);
+        let signature3 = calcAuthSigHash(dataVerify3, secretkey);
     
         const response = await fetch(`/api/proxy?endpoint=/onramp/v1/orders/${customOrderId}&walletAddress=${walletAddress}`, {
             method: "GET",
@@ -199,7 +204,7 @@ const HomePage: FC = () => {
 
 }
 
-const handleOnClick1 = async () => {
+const buyAssetAPI = async () => {
     instanceSDK?.current?.show();
 
     const randomString = require('crypto').randomBytes(32).toString('hex');
@@ -207,7 +212,7 @@ const handleOnClick1 = async () => {
     // Open a blank window immediately
     const newWindow = window.open('', '_blank');
 
-    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=23&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.google.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=43&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.citadel.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
         redirect: 'follow',
         headers: {
             "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
@@ -216,6 +221,7 @@ const handleOnClick1 = async () => {
     });
     
     console.log('Response Headers:', [...response.headers]);
+    console.log('signature signature signature signature signature', signature)
     
     const externalApiUrl = response.headers.get('X-External-Api-Url');
     
@@ -234,7 +240,6 @@ const handleOnClick1 = async () => {
 }
 
 
-
     // Handle form submission
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -249,12 +254,6 @@ const handleOnClick1 = async () => {
             ...form,
             [event.target.name]: event.target.value
         });
-    }
-
-    // Create a click handler
-    const handleGetQuotesClick = async () => {
-        const data = await getQuotes();
-        setQuotes(data);  // Set the response to the quotes state variable
     }
 
 
@@ -284,15 +283,15 @@ const handleOnClick1 = async () => {
             displayMode: GateFiDisplayModeEnum.Overlay,
             nodeSelector: "#overlay-button",
             isSandbox: true,
-            walletAddress: "0xc458f721D11325E38f781a9C58055de489178BF2",
-            email: "d.dadkhoo@unlimit.com",
+            walletAddress: "0xc458f721D11322E36f781a9C58055de489178BF2",
+            email: "test@tester.com",
             externalId: randomString,
             defaultFiat: {
-              currency: "EUR",
-              amount: "500",
+              currency: "USD",
+              amount: "64",
             },
             defaultCrypto: {
-              currency: "BTC"
+              currency: "ETH"
             },
           });
         }
@@ -300,7 +299,39 @@ const handleOnClick1 = async () => {
         overlayInstanceSDK.current?.show();
         setIsOverlayVisible(true);
       };
+
+
+
+      const handleOnClickProd = () => {
+        if (overlayInstanceSDK.current) {
+          if (isOverlayVisible) {
+            overlayInstanceSDK.current.hide();
+            setIsOverlayVisible(false);
+          } else {
+            overlayInstanceSDK.current.show();
+            setIsOverlayVisible(true);
+          }
+        } else {
+          const randomString = require('crypto').randomBytes(32).toString('hex');
+          overlayInstanceSDK.current = new GateFiSDK({
+            merchantId: "xxxxxxx",
+            displayMode: GateFiDisplayModeEnum.Overlay,
+            nodeSelector: "#overlay-button",
+            email: "test@tester.com",
+            externalId: randomString,
+            defaultFiat: {
+              currency: "USD",
+              amount: "11",
+            },
+            defaultCrypto: {
+              currency: "USDC_SOL"
+            },
+          });
+        }
       
+        overlayInstanceSDK.current?.show();
+        setIsOverlayVisible(true);
+      };
 
   
 
@@ -313,8 +344,8 @@ const createEmbedSdkInstance = () => {
         displayMode: GateFiDisplayModeEnum.Embedded,
         nodeSelector: "#embed-button",
         isSandbox: true,
-        walletAddress: "0xc458h721D11322E34f781a9C58055de489178BF2",
-        email: "d.dadkhoo@unlimit.com",
+        walletAddress: "0xc458f721D11322E36f781a9C58055de489178BF2",
+        email: "test@tester.com",
         externalId: randomString,
         defaultFiat: {
             currency: "USD",
@@ -346,7 +377,7 @@ const handleCloseEmbed = () => {
 };
 
     const handleHostedFlowClick = () => {
-        const url = "https://onramp-sandbox.gatefi.com/?merchantId=9e34f479-b43a-4372-8bdf-90689e16cd5b";
+        const url = "https://onramp-sandbox.gatefi.com/?merchantId=9e34f479-b43a-4372-8bdf-90689e16cd5b&lang=es_PE";
         window.open(url, "_blank");
     };
 
@@ -358,17 +389,23 @@ const handleCloseEmbed = () => {
         <>
         
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h2>GateFi </h2>
+            <h2>Unlimit Crypto </h2>
       
       
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
               <button onClick={handleOnClick}>Overlay</button>
               <button onClick={handleOnClickEmbed}>Embed</button>
-              <button onClick={handleOnClick1}>Buy Asset API GET</button>
-              {/* <button onClick={handleOnClickBuyAsset}>Buy Asset API PROD</button> */}
+              <button onClick={buyAssetAPI}>Buy Asset API GET</button>
+              {/* <button onClick={handleOnClickProd}>Overlay Prod</button> */}
               <button onClick={handleHostedFlowClick}>Hosted Flow</button>
+              <button onClick={getConfig}>Get Config</button>
             </div>
-      
+            {config && (
+                <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
+                    <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setConfig(null)}>X</button>
+                    <pre>{JSON.stringify(config, null, 2)}</pre>
+                </div>
+            )}
 
             <div id="overlay-button"></div>
             <div style={{ position: 'relative' }}>
@@ -488,17 +525,7 @@ const handleCloseEmbed = () => {
             </div>
             )}
 
-            <button onClick={getConfig}>Get Config</button>
-            {config && (
-                <div style={{ position: "relative", border: "1px solid #000", margin: "10px", padding: "10px", borderRadius: "5px", maxWidth: "500px", maxHeight: "300px", overflow: "auto" }}>
-                    <button style={{ position: "absolute", right: "10px", top: "10px" }} onClick={() => setConfig(null)}>X</button>
-                    <pre>{JSON.stringify(config, null, 2)}</pre>
-                </div>
-            )}
-
       
-
-
           </div>
         </>
       )

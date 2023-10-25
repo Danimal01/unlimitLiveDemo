@@ -12,9 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@gatefi/js-sdk": "^0.12.2",
-    "crypto-browserify": "^3.12.0",
-    "crypto-js": "^4.1.1",
+    "@gatefi/js-sdk": "^0.13.2",
     "next": "^13.4.12",
     "node-fetch": "^2.7.0",
     "react": "^18.2.0",

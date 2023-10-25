@@ -1,14 +1,14 @@
 const fetch = require('node-fetch');
-const CryptoJS = require("crypto-js");
+const crypto = require('crypto');
 
 const secretKey = process.env.SECRET_KEY;
-const prodSecretKey = process.env.PROD_SECRET_KEY;
 const apiKey = process.env.API_KEY;
 
-// Hash the secret key with the data
+// Hash the secret key with the data using the native Node.js crypto module
 function calcAuthSigHash(data) {
-    let hash = CryptoJS.HmacSHA256(data, secretKey);
-    return CryptoJS.enc.Hex.stringify(hash);
+    const hmac = crypto.createHmac('sha256', secretKey);
+    hmac.update(data);
+    return hmac.digest('hex');
 }
 
 module.exports = async (req, res) => {
@@ -54,8 +54,3 @@ module.exports = async (req, res) => {
         res.status(500).json({ error: 'Unable to fetch data' });
     }
 };
-
-
-
-
-
