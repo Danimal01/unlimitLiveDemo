@@ -214,7 +214,7 @@ const buyAssetAPI = async () => {
     // Open a blank window immediately
     const newWindow = window.open('', '_blank');
 
-    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=43&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.citadel.com/&region=US&walletAddress=0xc458f721D11322E36f781a9C58055de489178BF2`, {
+    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=43&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.citadel.com/&region=US&walletAddress=0xb43Ae6CC2060e31790d5A7FDAAea828681a9bB4B`, {
         redirect: 'follow',
         headers: {
             "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
@@ -285,7 +285,7 @@ const buyAssetAPI = async () => {
             displayMode: GateFiDisplayModeEnum.Overlay,
             nodeSelector: "#overlay-button",
             isSandbox: true,
-            walletAddress: "0xc458f721D11322E36f781a9C58055de489178BF2",
+            walletAddress: "0xb43Ae6CC2060e31790d5A7FDAAea828681a9bB4B",
             email: "test@tester.com",
             externalId: randomString,
             defaultFiat: {
@@ -346,7 +346,7 @@ const createEmbedSdkInstance = () => {
         displayMode: GateFiDisplayModeEnum.Embedded,
         nodeSelector: "#embed-button",
         isSandbox: true,
-        walletAddress: "0xc458f721D11322E36f781a9C58055de489178BF2",
+        walletAddress: "0xb43Ae6CC2060e31790d5A7FDAAea828681a9bB4B",
         email: "test@tester.com",
         externalId: randomString,
         defaultFiat: {
