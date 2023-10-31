@@ -478,7 +478,7 @@ const handleCloseEmbed = () => {
             <button onClick={handleOnClick}>Overlay</button>
             <button onClick={handleOnClickEmbed}>Embed</button>
             <button onClick={handleHostedFlowClick}>Hosted Flow</button>
-            <button onClick={handleOnClickProd}>Prod Overlay</button>
+            {/* <button onClick={handleOnClickProd}>Prod Overlay</button> */}
         </div>
 
         <div id="overlay-button"></div>
