@@ -368,7 +368,7 @@ const buyAssetAPI = async () => {
         } else {
           const randomString = require('crypto').randomBytes(32).toString('hex');
           overlayInstanceSDK.current = new GateFiSDK({
-            merchantId: "77f72e08-b9a5-47f9-9cbb-99856c8fffde",
+            merchantId: "xxx",
             displayMode: GateFiDisplayModeEnum.Overlay,
             nodeSelector: "#overlay-button",
             email: "d.dadkhoo@unlimit.com",
