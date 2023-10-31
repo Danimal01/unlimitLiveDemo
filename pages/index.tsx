@@ -20,6 +20,9 @@ const HomePage: FC = () => {
     const [config, setConfig] = useState(null);
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
     const [activeTab, setActiveTab] = useState('SDK and Hosted Flow'); // Default tab is "SDK and Hosted Flow"
+    const [responseText, setResponseText] = useState(null);
+    const [showResponse, setShowResponse] = useState(false);
+
 
     const overlayInstanceSDK = useRef<GateFiSDK | null>(null);
     const embedInstanceSDK = useRef<GateFiSDK | null>(null);
@@ -66,9 +69,7 @@ const HomePage: FC = () => {
   
 
     let secretkey = "GSLDrYtqLmXDJRHbqtUwDQLwKBbEgPvu"
-    let prodSecretkey = "xxxx"
-
-
+    let prodSecretkey = "xxxxxx"
 
 
     //string will be method + api path
@@ -78,6 +79,52 @@ const HomePage: FC = () => {
     let dataVerify3 = "GET" + "/onramp/v1/orders/184f5c5a1c25fd89536a00b626e9f44a6decbe10ab806292ccd4e5a5e199b496";
     let dataVerify4 = "GET" + "/onramp/v1/buy";
     let GetOrdersPath = "GET" + "/onramp/v1/orders";
+
+
+    function calcWebhookAuthSigHash(data) {
+      const hmac = crypto.createHmac('sha256', secretkey);
+      hmac.update(data);
+      return hmac.digest('hex');
+        }
+
+    const webhookHash = async () => {
+      const payload = {
+        cryptoAmount: 0.01098735,
+        cryptoCurrency: "ETH_ERC20",
+        customOrderId: "f763b66bd2z315f50a23420fbe3866a1b11816e5e0b19ae5bb058460498d4d92",
+        destinationWallet: "0xc458f721D11322E36f781a9C58055de489178BF2",
+        fiatAmount: 25,
+        fiatCurrency: "USD",
+        networkId: "1",
+        paymentMethod: "BANKCARD",
+        status: "created",
+        tapOnFeeAmount: "0",
+        tapOnFeeCurrency: "USD",
+        transactionHashes: null,
+        transactionId: "37e57804-3023-45c3-81cb-f85042c9ceb7"
+      };
+
+      const payloadString = JSON.stringify(payload);
+      const webhookSignature = calcWebhookAuthSigHash(payloadString);
+  
+      const response = await fetch('/api/hashWebhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-signature': webhookSignature, 
+        },
+        body: payloadString,
+      });
+  
+      const result = await response.text();
+      console.log(result);  // Log the response from your API route
+      setResponseText(result);
+      setShowResponse(true);
+    };
+
+    const closeResponse = () => {
+      setShowResponse(false);
+    };
 
 
     // Hash the secret key with the data
@@ -95,7 +142,11 @@ const HomePage: FC = () => {
       return hmac.digest('hex');
         }
 
-        console.log(calcAuthSigHash(dataVerify, secretkey))
+
+
+        console.log('config prod prod config', calcAuthSigHashProd(dataVerify))
+
+
 
     // console.log('Quotes Sig Test', calcAuthSigHash(dataVerify1))
     // console.log(calcAuthSigHash(dataVerify2))
@@ -214,7 +265,7 @@ const buyAssetAPI = async () => {
     // Open a blank window immediately
     const newWindow = window.open('', '_blank');
 
-    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=43&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.citadel.com/&region=US&walletAddress=0xb43Ae6CC2060e31790d5A7FDAAea828681a9bB4B`, {
+    const response = await fetch(`/api/proxy?endpoint=/onramp/v1/buy&amount=21&crypto=ETH&fiat=USD&orderCustomId=${randomString}&partnerAccountId=9e34f479-b43a-4372-8bdf-90689e16cd5b&payment=BANKCARD&redirectUrl=https://www.citadel.com/&region=US&walletAddress=0xb43Ae6CC2060e31790d5A7FDAAea828681a9bB4B`, {
         redirect: 'follow',
         headers: {
             "api-key": 'VrHPdUXBsiGtIoWXTGrqqAwmFalpepUq',
@@ -302,7 +353,7 @@ const buyAssetAPI = async () => {
         setIsOverlayVisible(true);
       };
 
-
+      
 
       const handleOnClickProd = () => {
         if (overlayInstanceSDK.current) {
@@ -316,21 +367,22 @@ const buyAssetAPI = async () => {
         } else {
           const randomString = require('crypto').randomBytes(32).toString('hex');
           overlayInstanceSDK.current = new GateFiSDK({
-            merchantId: "xxxxxxx",
+            merchantId: "xxxx",
             displayMode: GateFiDisplayModeEnum.Overlay,
             nodeSelector: "#overlay-button",
-            email: "test@tester.com",
+            email: "d.dadkhoo@unlimit.com",
             externalId: randomString,
+            // region: "ES",
             defaultFiat: {
               currency: "USD",
-              amount: "11",
+              amount: "21",
             },
             defaultCrypto: {
-              currency: "USDC_SOL"
+              currency: "ETH"
             },
           });
         }
-      
+        
         overlayInstanceSDK.current?.show();
         setIsOverlayVisible(true);
       };
@@ -425,6 +477,7 @@ const handleCloseEmbed = () => {
             <button onClick={handleOnClick}>Overlay</button>
             <button onClick={handleOnClickEmbed}>Embed</button>
             <button onClick={handleHostedFlowClick}>Hosted Flow</button>
+            <button onClick={handleOnClickProd}>Prod Overlay</button>
         </div>
 
         <div id="overlay-button"></div>
@@ -453,10 +506,7 @@ const handleCloseEmbed = () => {
             )}
         </div>
     </div>
-)}
-
-
-    
+)}   
               {activeTab === 'APIs' && (
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', marginTop: '10px' }}>
                     
@@ -464,6 +514,38 @@ const handleCloseEmbed = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginRight: '20px' }}>
                     <button onClick={buyAssetAPI}>Buy Asset API GET</button>
                     <button onClick={getConfig}>Get Config</button>
+                    <button onClick={webhookHash}>Webhook Verification</button>
+                      {showResponse && (
+                        <div style={{
+                          border: '2px solid #000',
+                          padding: '20px',
+                          margin: '20px 0',
+                          position: 'relative',
+                          borderRadius: '4px',
+                          backgroundColor: '#f9f9f9'
+                        }}>
+                          <p style={{ margin: '0', padding: '0' }}>{responseText}</p>
+                          <button 
+                            onClick={closeResponse} 
+                            style={{
+                              top: '10px',
+                              right: '10px',
+                              background: 'red',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '50%',
+                              fontSize: '18px',
+                              lineHeight: '20px',
+                              width: '20px',
+                              height: '20px',
+                              textAlign: 'center',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            X
+                          </button>
+                        </div>
+                      )}
                 </div>
     
     
