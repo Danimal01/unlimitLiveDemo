@@ -88,40 +88,46 @@ const HomePage: FC = () => {
       return hmac.digest('hex');
         }
 
-    const webhookHash = async () => {
-      const payload = {
-        cryptoAmount: 0.01098735,
-        cryptoCurrency: "ETH_ERC20",
-        customOrderId: "f763b66bd2z315f50a23420fbe3866a1b11816e5e0b19ae5bb058460498d4d92",
-        destinationWallet: "0xc458f721D11322E36f781a9C58055de489178BF2",
-        fiatAmount: 25,
-        fiatCurrency: "USD",
-        networkId: "1",
-        paymentMethod: "BANKCARD",
-        status: "created",
-        tapOnFeeAmount: "0",
-        tapOnFeeCurrency: "USD",
-        transactionHashes: null,
-        transactionId: "37e57804-3023-45c3-81cb-f85042c9ceb7"
+        const webhookHash = async () => {
+          // Fetch data from the new webhook URL
+          const webhookResponse = await fetch('/api/proxy?endpoint=/webhook-data');
+          const responseJson = await webhookResponse.json();  // Assume the data is in JSON format
+      
+          // Ensure the data has the necessary structure before proceeding
+          if (!responseJson.data || responseJson.data.length === 0 || !responseJson.data[0].headers || !responseJson.data[0].headers['x-signature']) {
+              console.error('Invalid data format received from webhook URL');
+              return;
+          }
+      
+          const receivedSignature = responseJson.data[0].headers['x-signature'][0];  // Extract the x-signature value from the first object in the data array
+          const payloadString = responseJson.data[0].content;  // Extract the content field which contains the payload data
+      
+          // Validate the received signature against the expected signature
+          const expectedSignature = calcWebhookAuthSigHash(payloadString);
+      
+          if (receivedSignature === expectedSignature) {
+              console.log('Signature is valid');
+          } else {
+              console.error('Invalid signature');
+          }
+      
+          // The rest of your code follows...
+          const response = await fetch('/api/hashWebhook', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'x-signature': expectedSignature,  // Use the expectedSignature for validation on the server
+              },
+              body: payloadString,
+          });
+      
+          const result = await response.text();
+          console.log(result);  // Log the response from your API route
+          setResponseText(result);
+          setShowResponse(true);
       };
-
-      const payloadString = JSON.stringify(payload);
-      const webhookSignature = calcWebhookAuthSigHash(payloadString);
-  
-      const response = await fetch('/api/hashWebhook', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-signature': webhookSignature, 
-        },
-        body: payloadString,
-      });
-  
-      const result = await response.text();
-      console.log(result);  // Log the response from your API route
-      setResponseText(result);
-      setShowResponse(true);
-    };
+      
+      
 
     const closeResponse = () => {
       setShowResponse(false);

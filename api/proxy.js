@@ -5,6 +5,18 @@ const secretKey = process.env.SECRET_KEY;
 const apiKey = process.env.API_KEY;
 
 
+async function fetchWebhookData() {
+    const response = await fetch('https://webhook.site/token/72a75303-71cc-42ad-8030-89eb652d8a13/requests?sorting=newest');
+    if (response.ok) {
+        return response.json();
+    } else {
+        console.error('Failed to fetch webhook data:', response.statusText);
+        throw new Error('Failed to fetch webhook data');
+    }
+}
+
+
+
 // Hash the secret key with the data using the native Node.js crypto module
 function calcAuthSigHash(data) {
     const hmac = crypto.createHmac('sha256', secretKey);
@@ -24,6 +36,18 @@ module.exports = async (req, res) => {
 
     const dataVerify = req.method + endpoint; // Adjust as needed based on the endpoint
     const signature = calcAuthSigHash(dataVerify);
+
+    if (req.query.endpoint === '/webhook-data') {
+        try {
+            const webhookData = await fetchWebhookData();
+            res.status(200).json(webhookData);
+        } catch (error) {
+            console.error('Error fetching webhook data:', error);
+            res.status(500).json({ error: 'Unable to fetch webhook data' });
+        }
+        return;
+    }
+
 
     try {
         const response = await fetch(apiUrl, {
