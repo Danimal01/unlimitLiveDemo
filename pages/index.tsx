@@ -69,7 +69,8 @@ const HomePage: FC = () => {
   
 
     let secretkey = "GSLDrYtqLmXDJRHbqtUwDQLwKBbEgPvu"
-    let prodSecretkey = "xxxxxx"
+    let prodSecretkey = "xx"
+    let webhookSecrerKey="GrZvMWzQxSrKZIAaeCsBndQCRoZtiyVz"
 
 
     //string will be method + api path
@@ -82,7 +83,7 @@ const HomePage: FC = () => {
 
 
     function calcWebhookAuthSigHash(data) {
-      const hmac = crypto.createHmac('sha256', secretkey);
+      const hmac = crypto.createHmac('sha256', webhookSecrerKey);
       hmac.update(data);
       return hmac.digest('hex');
         }
@@ -367,7 +368,7 @@ const buyAssetAPI = async () => {
         } else {
           const randomString = require('crypto').randomBytes(32).toString('hex');
           overlayInstanceSDK.current = new GateFiSDK({
-            merchantId: "xxxx",
+            merchantId: "77f72e08-b9a5-47f9-9cbb-99856c8fffde",
             displayMode: GateFiDisplayModeEnum.Overlay,
             nodeSelector: "#overlay-button",
             email: "d.dadkhoo@unlimit.com",

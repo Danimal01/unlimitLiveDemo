@@ -1,6 +1,6 @@
 // hashWebhook.js
 const crypto = require('crypto');
-const secretKey = "GSLDrYtqLmXDJRHbqtUwDQLwKBbEgPvu";
+const secretKey = "GrZvMWzQxSrKZIAaeCsBndQCRoZtiyVz";
 
 function calcAuthSigHash(data) {
   const hmac = crypto.createHmac('sha256', secretKey);
